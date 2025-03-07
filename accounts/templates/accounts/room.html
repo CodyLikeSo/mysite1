@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>ITS ROOM {{ room.name }}</p>
+        
+        <h3>Users in this room:</h3>
+        <ul>
+            {% for user_room in users_in_room %}
+                <li>{{ user_room.user.username }}</li>
+            {% empty %}
+                <li>No users in this room yet.</li>
+            {% endfor %}
+        </ul>
+
+        <h3>WANNA GO IN?</h3>
+        <a href="{% url 'join_room' room.id %}">Join Room</a>  <!-- Join button -->
+
+        <br>
+        <a href="{% url 'main' %}">BACK</a>
+    </body>
+</html>
