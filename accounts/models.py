@@ -23,3 +23,10 @@ class UserRoom(models.Model):
 
     class Meta:
         unique_together = ('user','room')
+
+class Card(models.Model):
+    name = models.CharField(max_length=25)
+    price = models.IntegerField()
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE)

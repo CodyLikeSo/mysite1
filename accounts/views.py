@@ -47,7 +47,9 @@ def user_login(request):  # Изменили имя функции
 
         new_user = authenticate(request, username=username, password=password)
         if new_user is not None:
-            login(request, new_user)  # Теперь вызываем встроенную функцию
+            login(request, new_user)
+        else:
+            return HttpResponse("WRONG SPELL")  # Теперь вызываем встроенную функцию
 
         return redirect('main')
     
@@ -95,14 +97,15 @@ def join_room(request, pk):
     user_room, created = UserRoom.objects.get_or_create(user=request.user, room=room)
 
     if created:
-        print(f"{request.user.username} joined {room.name}")
+        return HttpResponse(f"{request.user.username} joined {room.name}")
 
     return redirect("get_room", pk=pk)  # Redirect back to the room page
 
 def get_my_rooms(request):
-    rooms = UserRoom.objects.all()
-    out = []
-    for room in rooms:
-        if room.user == request.user:
-            out.append(room.user)
-    return HttpResponse(out)
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    rooms = Room.objects.filter(userroom__user=request.user)  # Use reverse lookup
+
+    context = {'rooms': rooms}
+    return render(request, "accounts/get_my_rooms.html", context)

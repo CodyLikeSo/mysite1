@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>LIST OF ROOMS</p>
+        
+        <ul>
+            {% for room in rooms %}
+                <li>{{ room.name }}</li>
+            {% empty %}
+                <li>NO ROOMS HERE</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'main' %}">BACK</a>
+    </body>
+</html>
