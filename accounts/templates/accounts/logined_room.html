@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <p>{{ room.name }}</p>
+        <h1>{{ room.name }}</h1>
+        <li><a href="leave_room">LEAVE</a></li>
+        <li><a href="delete_room">DELETE ROOM</a></li>
         
-        <h3>Users in this room:</h3>
+        <p>USERS IN THIS ROOM</p>
         <ul>
             {% for user_room in users_in_room %}
                 <li>{{ user_room.user.username }}</li>
@@ -11,8 +13,25 @@
                 <li>No users in this room yet.</li>
             {% endfor %}
         </ul>
-
-        <h3>YOU ARE ALREADY INSIDE THIS ROOM</h3>
+        
+        <p>EXISTS CARDS</p>
+        <ul>
+            {% for card in cards %}
+                <li>{{ card.name }} ___ {{ card.price }} ___ {{ card.user }}</li>
+            {% empty %}
+                <li>No cards</li>
+            {% endfor %}
+        </ul>
+        <a href="cards_list">DELETE CARD</a>
+        <br>
+        <p>DEBTS INFO</p>
+        <ul>
+            {% for transaction in debts_info %}
+                <li>{{ transaction.user }} должен {{ transaction.debt }} пользователю {{ transaction.user_to_pay }}</li>
+            {% empty %}
+                <li>No debts to report.</li>
+            {% endfor %}
+        </ul>
 
         <h3>CREATE CARD</h3>
         <form method="POST">
@@ -21,23 +40,6 @@
             <input type="price" name="price" placeholder="Card Price">
             <button type="submit">ADD</button>
         </form>
-        
-        <ul>
-            {% for card in cards %}
-                <li>Name: {{ card.name }} Price: {{ card.price }}</li>
-            {% empty %}
-                <li>No cards</li>
-            {% endfor %}
-        </ul>
-        <br>
-        <h3>Debt Information:</h3>
-        <ul>
-            {% for transaction in debts_info %}
-                <li>{{ transaction.user }} должен {{ transaction.debt }} пользователю {{ transaction.user_to_pay }}</li>
-            {% empty %}
-                <li>No debts to report.</li>
-            {% endfor %}
-        </ul>
 
         <a href="{% url 'main' %}">BACK</a>
     </body>

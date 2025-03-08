@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <h1>LIST OF EXISTING CARDS IN ROOM</h1>
+        <ul>
+            {% for card in cards %}
+                <li>
+                    {{ card.name }} 
+                    <form action="{% url 'delete_card' room_pk=room.id card_pk=card.id %}" method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit">Delete</button>
+                    </form>
+                </li>
+            {% empty %}
+                <li>No cards available.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'get_room' pk=room.id %}">BACK</a>
+    </body>
+</html>

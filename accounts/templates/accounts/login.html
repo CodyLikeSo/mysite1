@@ -1,6 +1,9 @@
 <form method="POST">
+    <h1>DUELIST</h1>
     {% csrf_token %}
-    <input type="username" name="username">
-    <input type="password" name="password">
+    <ul>
+        <li>Name<input type="username" name="username"></li>
+        <li>Password<input type="password" name="password"></li>
+    </ul>
     <button type="submit">LOGIN</button>
 </form>

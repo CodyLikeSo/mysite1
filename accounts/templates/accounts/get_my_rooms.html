@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <p>LIST OF ROOMS</p>
+        <h1>LIST OF YOUR ROOMS</h1>
         
         <ul>
             {% for room in rooms %}
-                <li>{{ room.name }}</li>
+                <li><a href="{% url 'get_room' room.id %}">{{ room.name }}</a></li>
             {% empty %}
                 <li>NO ROOMS HERE</li>
             {% endfor %}

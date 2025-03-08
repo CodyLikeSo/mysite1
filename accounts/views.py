@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 
 def main(request):
+    if not request.user.is_authenticated:
+        return render(request, 'accounts/not_logined_main.html')
     return render(request, 'accounts/main.html')
 
 @login_required
@@ -55,9 +57,22 @@ def user_login(request):  # Изменили имя функции
     
     return render(request, 'accounts/login.html')
 
+@login_required
 def user_logout(request):
     logout(request)
     return redirect('main')
+
+@login_required
+def leave_room(request, pk):
+    room = get_object_or_404(Room, id=pk)
+    
+    # Find the UserRoom relation
+    room_user = UserRoom.objects.filter(user=request.user, room=room)
+
+    if room_user.exists():
+        room_user.delete()  # Remove the user from the room
+
+    return redirect("main") 
 
 @login_required
 def add_room(request):
@@ -70,10 +85,16 @@ def add_room(request):
         new_room = Room(name=name, admin=admin)
         new_room.save()
 
-        return redirect('main')  # Замените 'main' на нужный URL
+        text_header = "SUCCES"
+        text_inner = 'YOUR ROOM ADDED TO LIST'
+        context = {'text_header':text_header, 'text_inner':text_inner}
+
+        user_room, created = UserRoom.objects.get_or_create(user=request.user, room=new_room)
+        return render(request, "accounts/succesfull.html", context)  # Замените 'main' на нужный URL
 
     return render(request, 'accounts/add_room.html')
 
+@login_required
 def show_rooms(request):
     if request.method == 'GET':
         rooms = Room.objects.all()
@@ -82,6 +103,25 @@ def show_rooms(request):
         return render(request, 'accounts/show_rooms.html', context)
     return HttpResponse("...")
 
+@login_required
+def delete_room(request, pk):
+    room = get_object_or_404(Room, id=pk)
+
+    # ✅ Check if the logged-in user is the admin of the room
+    if request.user != room.admin:
+        text_header = 'FAIL'
+        text_inner = 'YOU ARE NOT THE ADMIN OF ROOM'
+        context = {'text_header':text_header, 'text_inner':text_inner}
+        return render(request, "accounts/succesfull.html", context)  # Redirect back to the room page
+
+    # ✅ Delete the room
+    room.delete()
+    text_header = 'CONGRATES'
+    text_inner = 'YOUR ROOM IS DELETED'
+    context = {'text_header':text_header, 'text_inner':text_inner}
+    return render(request, "accounts/succesfull.html", context)
+
+@login_required
 def get_room(request, pk):
     room = get_object_or_404(Room, id=pk)
     user = request.user  # Получаем текущего пользователя
@@ -106,40 +146,41 @@ def get_room(request, pk):
         prices_cards.append((card.price, card.user.username))
 
     def results(prices_cards):
-        result = {}
+        if prices_cards.__len__() != 0:
+            result = {}
 
-        for number, string in prices_cards:
-            if string in result:
-                result[string] += number
-            else:
-                result[string] = number
+            for number, string in prices_cards:
+                if string in result:
+                    result[string] += number
+                else:
+                    result[string] = number
 
-        total_sum = sum(result.values())
-        num_people = len(result)
+            total_sum = sum(result.values())
+            num_people = len(result)
 
-        average = total_sum / num_people
+            average = total_sum / num_people
 
-        debts = {}
-        for person, amount in result.items():
-            debts[person] = amount - average
+            debts = {}
+            for person, amount in result.items():
+                debts[person] = amount - average
 
-        debtors = {k: -v for k, v in debts.items() if v < 0}  # Те, кто должен
-        creditors = {k: v for k, v in debts.items() if v > 0}  # Те, кто должен получить
+            debtors = {k: -v for k, v in debts.items() if v < 0}  # Те, кто должен
+            creditors = {k: v for k, v in debts.items() if v > 0}  # Те, кто должен получить
 
-        transactions = []
-        for debtor, debt in debtors.items():
-            for creditor, credit in creditors.items():
-                if debt > 0 and credit > 0:
-                    amount_to_pay = min(-debt, credit)
-                    transactions.append({
-                        'user': debtor,
-                        'debt': amount_to_pay,
-                        'user_to_pay': creditor
-                    })
-                    debtors[debtor] += amount_to_pay  # Уменьшаем долг
-                    creditors[creditor] -= amount_to_pay  # Уменьшаем кредит
+            transactions = []
+            for debtor, debt in debtors.items():
+                for creditor, credit in creditors.items():
+                    if debt > 0 and credit > 0:
+                        amount_to_pay = min(-debt, credit)
+                        transactions.append({
+                            'user': debtor,
+                            'debt': amount_to_pay,
+                            'user_to_pay': creditor
+                        })
+                        debtors[debtor] += amount_to_pay  # Уменьшаем долг
+                        creditors[creditor] -= amount_to_pay  # Уменьшаем кредит
 
-        return transactions
+            return transactions
     
 
     if request.method == 'POST':
@@ -154,6 +195,7 @@ def get_room(request, pk):
         context = {'text_header':text_header, 'text_inner':text_inner}
         return render(request, "accounts/succesfull.html", context)
 
+
     context = {
         "room": room,
         "is_user_in_room": is_user_in_room,
@@ -164,6 +206,28 @@ def get_room(request, pk):
         'debts_info': results(prices_cards=prices_cards)
         }
     return render(request, template_name, context)
+
+@login_required
+def cards_list(request, pk):
+    room = get_object_or_404(Room, id=pk)
+    cards = Card.objects.filter(room=room)
+
+    context = {
+        "cards": cards,
+        "room": room,  # Add room to the context
+    }
+    return render(request, "accounts/cards_list.html", context)
+
+
+@login_required  # Ensures only logged-in users can delete
+def delete_card(request, room_pk, card_pk):
+    card = get_object_or_404(Card, id=card_pk)
+
+    # Optional: Ensure only the card owner can delete it
+    if request.user == card.user:
+        card.delete()
+
+    return redirect('cards_list', pk=room_pk)  # Redirects back to the card list
 
 @login_required
 def join_room(request, pk):
@@ -181,6 +245,7 @@ def join_room(request, pk):
 
     return redirect("get_room", pk=pk)  # Redirect back to the room page
 
+@login_required
 def get_my_rooms(request):
     if not request.user.is_authenticated:
         return redirect("login")
@@ -190,5 +255,7 @@ def get_my_rooms(request):
     context = {'rooms': rooms}
     return render(request, "accounts/get_my_rooms.html", context)
 
+@login_required
 def add_card_to_room(request):
     pass
+
