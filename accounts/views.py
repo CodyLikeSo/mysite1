@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from .models import MyObject, Room, UserRoom
+from .models import MyObject, Room, UserRoom, Card
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
@@ -84,10 +84,86 @@ def show_rooms(request):
 
 def get_room(request, pk):
     room = get_object_or_404(Room, id=pk)
-    users_in_room = UserRoom.objects.filter(room=room).select_related("user")  # Get users in the room
+    user = request.user  # Получаем текущего пользователя
 
-    context = {"room": room, "users_in_room": users_in_room}
-    return render(request, "accounts/room.html", context)
+
+    users_in_room = UserRoom.objects.filter(room=room).select_related("user")
+
+
+    # Проверяем, есть ли запись в UserRoom для данного пользователя и комнаты
+    is_user_in_room = UserRoom.objects.filter(user=user, room=room).exists()
+
+    members = UserRoom.objects.filter(room=room)
+    count_members = members.__len__()
+
+
+    # Выбираем шаблон в зависимости от того, находится ли пользователь в комнате
+    template_name = "accounts/logined_room.html" if is_user_in_room else "accounts/room.html"
+
+    cards = Card.objects.filter(room=room)
+    prices_cards = []
+    for card in cards:
+        prices_cards.append((card.price, card.user.username))
+
+    def results(prices_cards):
+        result = {}
+
+        for number, string in prices_cards:
+            if string in result:
+                result[string] += number
+            else:
+                result[string] = number
+
+        total_sum = sum(result.values())
+        num_people = len(result)
+
+        average = total_sum / num_people
+
+        debts = {}
+        for person, amount in result.items():
+            debts[person] = amount - average
+
+        debtors = {k: -v for k, v in debts.items() if v < 0}  # Те, кто должен
+        creditors = {k: v for k, v in debts.items() if v > 0}  # Те, кто должен получить
+
+        transactions = []
+        for debtor, debt in debtors.items():
+            for creditor, credit in creditors.items():
+                if debt > 0 and credit > 0:
+                    amount_to_pay = min(-debt, credit)
+                    transactions.append({
+                        'user': debtor,
+                        'debt': amount_to_pay,
+                        'user_to_pay': creditor
+                    })
+                    debtors[debtor] += amount_to_pay  # Уменьшаем долг
+                    creditors[creditor] -= amount_to_pay  # Уменьшаем кредит
+
+        return transactions
+    
+
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        price = request.POST.get('price')
+
+        new_card = Card(name=name, price=price, user=request.user, room=room)
+        new_card.save()
+
+        text_header = 'CONGRATES'
+        text_inner = 'YOUR CARD IS CREATED'
+        context = {'text_header':text_header, 'text_inner':text_inner}
+        return render(request, "accounts/succesfull.html", context)
+
+    context = {
+        "room": room,
+        "is_user_in_room": is_user_in_room,
+        'users_in_room': users_in_room,
+        'count_members': count_members,
+        'cards': cards,
+        'prices_cards': prices_cards,
+        'debts_info': results(prices_cards=prices_cards)
+        }
+    return render(request, template_name, context)
 
 @login_required
 def join_room(request, pk):
@@ -96,8 +172,12 @@ def join_room(request, pk):
     # Check if the user is already in the room
     user_room, created = UserRoom.objects.get_or_create(user=request.user, room=room)
 
+    text_header = 'You are joined room succesfully'
+    text_inner = f"{request.user.username} joined {room.name}"
+    context = {'text_header': text_header, 'text_inner': text_inner}
+
     if created:
-        return HttpResponse(f"{request.user.username} joined {room.name}")
+        return render(request, "accounts/succesfull.html", context)
 
     return redirect("get_room", pk=pk)  # Redirect back to the room page
 
@@ -109,3 +189,6 @@ def get_my_rooms(request):
 
     context = {'rooms': rooms}
     return render(request, "accounts/get_my_rooms.html", context)
+
+def add_card_to_room(request):
+    pass

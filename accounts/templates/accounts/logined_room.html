@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <p>{{ room.name }}</p>
+        
+        <h3>Users in this room:</h3>
+        <ul>
+            {% for user_room in users_in_room %}
+                <li>{{ user_room.user.username }}</li>
+            {% empty %}
+                <li>No users in this room yet.</li>
+            {% endfor %}
+        </ul>
+
+        <h3>YOU ARE ALREADY INSIDE THIS ROOM</h3>
+
+        <h3>CREATE CARD</h3>
+        <form method="POST">
+            {% csrf_token %}
+            <input type="name" name="name" placeholder="Card Name">
+            <input type="price" name="price" placeholder="Card Price">
+            <button type="submit">ADD</button>
+        </form>
+        
+        <ul>
+            {% for card in cards %}
+                <li>Name: {{ card.name }} Price: {{ card.price }}</li>
+            {% empty %}
+                <li>No cards</li>
+            {% endfor %}
+        </ul>
+        <br>
+        <h3>Debt Information:</h3>
+        <ul>
+            {% for transaction in debts_info %}
+                <li>{{ transaction.user }} должен {{ transaction.debt }} пользователю {{ transaction.user_to_pay }}</li>
+            {% empty %}
+                <li>No debts to report.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'main' %}">BACK</a>
+    </body>
+</html>
