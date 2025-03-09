@@ -1,18 +1,23 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
+    {% tailwind_css %}
 </head>
-<body>
+<body class="bg-myorange">
 
-    <h1>DUELIST</h1>
+    <h1 class="text-myblack flex justify-center text-5xl py-20">Kebapp</h1>
 
-    <ul>
-        <li><a href="join">Register</a></li>
-        <li><a href="login">Log In</a></li>
-    </ul>
+    <div class="mx-auto w-[280px] h-[55px] bg-myred">
+        <a class="flex justify-center p-[11px] text-2xl" href="join">Register</a>
+    </div>
+    
+    <div class="mx-auto w-[280px] h-[55px] bg-myred">
+        <a class="flex justify-center p-[11px] text-2xl" href="login">Log In</a>
+    </div>
 
 </body>
 </html>
