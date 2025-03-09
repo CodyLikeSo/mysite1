@@ -1,9 +1,40 @@
-<form method="POST">
-    <h1>DUELIST</h1>
-    {% csrf_token %}
-    <ul>
-        <li>Name<input type="username" name="username"></li>
-        <li>Password<input type="password" name="password"></li>
-    </ul>
-    <button type="submit">LOGIN</button>
-</form>
+{% load static tailwind_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebapp - Register</title>
+    {% tailwind_css %}
+    <style>
+        body {
+            background-image: url("{% static 'accounts/fire.png' %}");
+            background-repeat: no-repeat;
+            background-position: center bottom; /* Центрируем по горизонтали и размещаем внизу */
+            background-size: cover; /* Подгоняем размеры изображения под экран */
+        }
+    </style>
+</head>
+<body class="bg-myyellow">
+
+    <div class="flex justify-center items-center py-20">
+        <form method="POST" class="flex flex-col">
+            <h1 class="text-6xl text-myred mb-10">Kebapp</h1>
+            {% csrf_token %}
+            <div class="flex-grow">
+                <div class="bg-myorange mb-4 rounded-[15px]">
+                    <input class="bg-myorange rounded-[15px] text-myaccentorange" type="text" name="username" placeholder="Username" required>
+                </div>
+                <div class="bg-myorange mb-10 rounded-[15px]">
+                    <input class="bg-myorange rounded-[15px] text-myaccentorange" type="password" name="password" placeholder="Password" required>
+                </div>
+                <div class="bg-myaccentorange py-3 rounded-[15px]">
+                    <button class="flex mx-auto justify-center items-center text-myyellow" type="submit">Sign Up</button>
+                </div>
+            </div>
+            <a class="text-myblack mt-4 mx-auto flex justify-center items-center" href="{% url 'join' %}">Sign Up</a>
+        </form>
+    </div>
+</body>
+</html>

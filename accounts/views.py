@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 
 def main(request):
     if not request.user.is_authenticated:
-        return render(request, 'accounts/not_logined_main.html')
+        return render(request, 'accounts/login.html')
     return render(request, 'accounts/main.html')
 
 @login_required

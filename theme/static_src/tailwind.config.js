@@ -44,10 +44,11 @@ module.exports = {
     theme: {
         extend: {
           colors: {
-            myorange: '#FFCB9D',
-            myred: '#D74B4D',
-            myblack: '#534242',
-            myaccentorange: '#F0984A',
+            myorange: '#FFDB96',
+            myred: '#ED3101',
+            myblack: '#171717',
+            myaccentorange: '#EA6113',
+            myyellow: '#FFE5B4',  
           },
         },
     },
