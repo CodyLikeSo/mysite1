@@ -1,39 +1,32 @@
 {% load static tailwind_tags %}
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kebapp - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% tailwind_css %}
-    <style>
-        body {
-            background-image: url("{% static 'accounts/fire.png' %}");
-            background-repeat: no-repeat;
-            background-position: center bottom; /* Центрируем по горизонтали и размещаем внизу */
-            background-size: cover; /* Подгоняем размеры изображения под экран */
-        }
-    </style>
 </head>
 <body class="bg-myyellow">
-
-    <div class="flex justify-center items-center py-20">
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/fire.png' %}" alt="Fire Image">
+    <img class="absolute top-[260px] left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Banner Image">
+    <div class="flex justify-center items-center py-[385px]">
         <form method="POST" class="flex flex-col">
-            <h1 class="text-6xl text-myred mb-10">Kebapp</h1>
             {% csrf_token %}
-            <div class="flex-grow">
-                <div class="bg-myorange mb-4 rounded-[15px]">
-                    <input class="bg-myorange rounded-[15px] text-myaccentorange" type="text" name="username" placeholder="Username" required>
+            <div class="flex-grow focus:outline-none">
+                <div class="focus:border-myaccentorange bg-myorange mb-4 rounded-[15px]">
+                    <input class="bg-myorange rounded-[15px] text-myaccentorange w-[320px] p-2 focus:border-myaccentorange border-[2px] border-transparent focus:outline-none focus:ring-0 placeholder:text-myaccentorange" type="text" name="username" placeholder="Username" required>
                 </div>
-                <div class="bg-myorange mb-10 rounded-[15px]">
-                    <input class="bg-myorange rounded-[15px] text-myaccentorange" type="password" name="password" placeholder="Password" required>
+                <div class="focus:border-myaccentorange bg-myorange mb-6 rounded-[15px]">
+                    <input class="bg-myorange rounded-[15px] text-myaccentorange w-[320px] p-2 focus:border-myaccentorange border-[2px] border-transparent focus:outline-none focus:ring-0 placeholder:text-myaccentorange" type="password" name="password" placeholder="Password" required>
                 </div>
                 <div class="bg-myaccentorange py-3 rounded-[15px]">
-                    <button class="flex mx-auto justify-center items-center text-myyellow" type="submit">Sign Up</button>
+                    <button class="flex mx-auto justify-center items-center text-myyellow" type="submit">Sign In</button>
                 </div>
             </div>
-            <a class="text-myblack mt-4 mx-auto flex justify-center items-center" href="{% url 'join' %}">Sign Up</a>
+            <a class="text-myblack text-[18px] absolute bottom-[30px] left-1/2 transform -translate-x-1/2 font-syne" href="{% url 'join' %}">Sign Up</a>
         </form>
     </div>
 </body>

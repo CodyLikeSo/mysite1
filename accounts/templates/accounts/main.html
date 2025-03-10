@@ -5,21 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Menu</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% tailwind_css %}
 </head>
-<body>
+<body class="bg-myyellow">
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/bottom_banner.png' %}" alt="Bottom Banner Image">
+    <img class="absolute top-[60px] left-1/2 transform -translate-x-1/2 z-[-0]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Top Banner Image">
+    <div class="flex justify-center items-center py-[380px]">
 
-    <h1 class="text-mycolor">Main Menu</h1>
+        
 
-    <ul>
-        <!-- <li><a href="add">Add Object</a></li> -->
-        <!-- <li><a href="join">Add User</a></li> -->
-        <!-- <li><a href="login">Log In</a></li> -->
-        <li><a href="user_logout">Logout</a></li>
-        <li><a href="add_room">Create Room</a></li>
-        <li><a href="show_rooms">Show All Rooms</a></li>
-        <li><a href="get_my_rooms">Show My Rooms</a></li>
-    </ul>
+        <div class="flex flex-col space-y-4 w-[320px] text-myyellow">
+            <a href="show_rooms" class="bg-myred px-4 p-2 rounded-[10px]">
+                Find Rooms
+            </a>
+            <a href="add_room" class="bg-mygreen px-4 p-2 rounded-[10px]">
+                Create Room
+            </a>
+            <a href="get_my_rooms" class="bg-myorange2 px-4 p-2 rounded-[10px] text-myblack">
+                My Rooms
+            </a>
+        </div>
+        
 
+            <a class="absolute bottom-[30px] text-[18px]" href="user_logout">Log out</a>
 </body>
 </html>

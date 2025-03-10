@@ -48,7 +48,12 @@ module.exports = {
             myred: '#ED3101',
             myblack: '#171717',
             myaccentorange: '#EA6113',
-            myyellow: '#FFE5B4',  
+            myyellow: '#FFE5B4',
+            mygreen: '#104E43',
+            myorange2: '#FBA91F',  
+          },
+          fontFamily: {
+            syne: ["Syne", "sans-serif"], // Добавляем кастомный шрифт
           },
         },
     },
