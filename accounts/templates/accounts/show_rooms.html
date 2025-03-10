@@ -7,6 +7,22 @@
     <title>Rooms</title>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
     {% tailwind_css %}
+    <style>
+        body {
+            overflow: hidden; /* Отключает прокрутку */
+        }
+    </style>
+        <style>
+            /* Скрытие скроллбара для Webkit (Chrome, Safari) */
+            .hide-scrollbar::-webkit-scrollbar {
+                display: none;
+            }
+    
+            /* Скрытие скроллбара для Firefox */
+            .hide-scrollbar {
+                scrollbar-width: none;
+            }
+        </style>
 </head>
 <body class="bg-myyellow">
     <!-- Фоновые изображения -->
@@ -17,16 +33,18 @@
     <!-- Контейнер списка комнат -->
     <div class="flex justify-center items-center py-[380px]">
         <div class="flex flex-col space-y-4 w-[320px] text-myyellow">
-
             <h2 class="text-myblack text-center text-lg">List of existing rooms</h2>
 
-            {% for room in rooms %}
-                <a href="{% url 'get_room' room.id %}" class="bg-myorange2 text-myblack px-4 p-2 rounded-[10px]">
-                    {{ room.name }}
-                </a>
-            {% empty %}
-                <div class="text-myblack text-center">No rooms available.</div>
-            {% endfor %}
+            <!-- Контейнер с прокруткой -->
+            <div class="max-h-[150px] overflow-y-auto hide-scrollbar p-2">
+                {% for room in rooms %}
+                    <a href="{% url 'get_room' room.id %}" class="block bg-myorange2 text-myblack px-4 p-2 rounded-[10px] mb-2">
+                        {{ room.name }}
+                    </a>
+                {% empty %}
+                    <div class="text-myblack text-center">No rooms available.</div>
+                {% endfor %}
+            </div>
 
             <!-- Кнопка "Back" -->
             <a href="{% url 'main' %}" class="bg-myaccentorange px-4 p-2 rounded-[10px] text-center">

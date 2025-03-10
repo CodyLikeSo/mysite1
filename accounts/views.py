@@ -51,7 +51,10 @@ def user_login(request):  # Изменили имя функции
         if new_user is not None:
             login(request, new_user)
         else:
-            return HttpResponse("WRONG SPELL")  # Теперь вызываем встроенную функцию
+            text_header = "Oh No!"
+            text_inner = "Username or Password was wrong!"
+            context = {'text_header':text_header, 'text_inner':text_inner}
+            return render(request, 'accounts/succesfull.html', context)  # Теперь вызываем встроенную функцию
 
         return redirect('main')
     
@@ -107,94 +110,95 @@ def show_rooms(request):
 def delete_room(request, pk):
     room = get_object_or_404(Room, id=pk)
 
-    # ✅ Check if the logged-in user is the admin of the room
     if request.user != room.admin:
-        text_header = 'FAIL'
-        text_inner = 'YOU ARE NOT THE ADMIN OF ROOM'
+        text_header = 'Oh no'
+        text_inner = 'You are not admin'
         context = {'text_header':text_header, 'text_inner':text_inner}
         return render(request, "accounts/succesfull.html", context)  # Redirect back to the room page
 
-    # ✅ Delete the room
     room.delete()
-    text_header = 'CONGRATES'
-    text_inner = 'YOUR ROOM IS DELETED'
+    text_header = 'Already done?'
+    text_inner = 'Your room was deleted'
     context = {'text_header':text_header, 'text_inner':text_inner}
     return render(request, "accounts/succesfull.html", context)
 
-@login_required
 def get_room(request, pk):
     room = get_object_or_404(Room, id=pk)
-    user = request.user  # Получаем текущего пользователя
-
+    user = request.user  
 
     users_in_room = UserRoom.objects.filter(room=room).select_related("user")
-
-
-    # Проверяем, есть ли запись в UserRoom для данного пользователя и комнаты
     is_user_in_room = UserRoom.objects.filter(user=user, room=room).exists()
-
     members = UserRoom.objects.filter(room=room)
-    count_members = members.__len__()
+    count_members = members.count()
 
-
-    # Выбираем шаблон в зависимости от того, находится ли пользователь в комнате
     template_name = "accounts/logined_room.html" if is_user_in_room else "accounts/room.html"
 
     cards = Card.objects.filter(room=room)
-    prices_cards = []
-    for card in cards:
-        prices_cards.append((card.price, card.user.username))
-
+    prices_cards = [(card.price, card.user.username) for card in cards]
     def results(prices_cards):
-        if prices_cards.__len__() != 0:
-            result = {}
+        if prices_cards:
+            from collections import defaultdict
 
-            for number, string in prices_cards:
-                if string in result:
-                    result[string] += number
-                else:
-                    result[string] = number
+            # Подсчет общей суммы затрат и затрат каждого пользователя
+            total_spent = 0
+            user_spent = defaultdict(float)
 
-            total_sum = sum(result.values())
-            num_people = len(result)
+            for amount, user in prices_cards:
+                user_spent[user] += amount
+                total_spent += amount
 
-            average = total_sum / num_people
+            # Вычисляем среднюю сумму, которую должен был потратить каждый пользователь
+            num_users = len(user_spent)
+            fair_share = total_spent / num_users
 
-            debts = {}
-            for person, amount in result.items():
-                debts[person] = amount - average
+            # Определяем, кто должен и кто переплатил
+            debtors = []
+            creditors = []
 
-            debtors = {k: -v for k, v in debts.items() if v < 0}  # Те, кто должен
-            creditors = {k: v for k, v in debts.items() if v > 0}  # Те, кто должен получить
+            for user, spent in user_spent.items():
+                balance = spent - fair_share
+                if balance < 0:
+                    debtors.append((user, -balance))  # Этот пользователь должен
+                elif balance > 0:
+                    creditors.append((user, balance))  # Этот пользователь переплатил
 
+            # Распределяем долги
             transactions = []
-            for debtor, debt in debtors.items():
-                for creditor, credit in creditors.items():
-                    if debt > 0 and credit > 0:
-                        amount_to_pay = min(-debt, credit)
-                        transactions.append({
-                            'user': debtor,
-                            'debt': amount_to_pay,
-                            'user_to_pay': creditor
-                        })
-                        debtors[debtor] += amount_to_pay  # Уменьшаем долг
-                        creditors[creditor] -= amount_to_pay  # Уменьшаем кредит
+            i, j = 0, 0
+
+            while i < len(debtors) and j < len(creditors):
+                debtor, debt_amount = debtors[i]
+                creditor, credit_amount = creditors[j]
+
+                transfer_amount = min(debt_amount, credit_amount)
+
+                transactions.append({
+                    'user': debtor,
+                    'debt': round(transfer_amount, 2),
+                    'user_to_pay': creditor
+                })
+
+                # Обновляем суммы
+                debtors[i] = (debtor, debt_amount - transfer_amount)
+                creditors[j] = (creditor, credit_amount - transfer_amount)
+
+                # Убираем тех, кто полностью рассчитался
+                if debtors[i][1] == 0:
+                    i += 1
+                if creditors[j][1] == 0:
+                    j += 1
 
             return transactions
-    
-
+        return []
+        
     if request.method == 'POST':
         name = request.POST.get('name')
         price = request.POST.get('price')
 
-        new_card = Card(name=name, price=price, user=request.user, room=room)
-        new_card.save()
+        if name and price:
+            Card.objects.create(name=name, price=price, user=request.user, room=room)
 
-        text_header = 'CONGRATES'
-        text_inner = 'YOUR CARD IS CREATED'
-        context = {'text_header':text_header, 'text_inner':text_inner}
-        return render(request, "accounts/succesfull.html", context)
-
+        return redirect('get_room', pk=room.id)  # <-- Редирект после успешного создания карты
 
     context = {
         "room": room,
@@ -203,11 +207,10 @@ def get_room(request, pk):
         'count_members': count_members,
         'cards': cards,
         'prices_cards': prices_cards,
-        'debts_info': results(prices_cards=prices_cards)
-        }
+        'debts_info': results(prices_cards)
+    }
     return render(request, template_name, context)
 
-@login_required
 def cards_list(request, pk):
     room = get_object_or_404(Room, id=pk)
     cards = Card.objects.filter(room=room)

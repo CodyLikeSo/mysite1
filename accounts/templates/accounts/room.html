@@ -1,21 +1,65 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
-    <body>
-        <p>ITS ROOM {{ room.name }}</p>
-        
-        <h3>Users in this room:</h3>
-        <ul>
-            {% for user_room in users_in_room %}
-                <li>{{ user_room.user.username }}</li>
-            {% empty %}
-                <li>No users in this room yet.</li>
-            {% endfor %}
-        </ul>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room {{ room.name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% tailwind_css %}
+    <style>
+        body {
+            overflow: hidden; /* Отключает прокрутку */
+        }
+    </style>
+    <style>
+        /* Скрытие скроллбара для Webkit (Chrome, Safari) */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
 
-        <h3>WANNA GO IN?</h3>
-        <a href="{% url 'join_room' room.id %}">Join Room</a>  <!-- Join button -->
+        /* Скрытие скроллбара для Firefox */
+        .hide-scrollbar {
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-myyellow">
+    <!-- Фоновые изображения -->
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/bottom_banner.png' %}" alt="Bottom Banner Image">
+    <img class="absolute top-[60px] left-1/2 transform -translate-x-1/2 z-[-0]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Top Banner Image">
 
-        <br>
-        <a href="{% url 'main' %}">BACK</a>
-    </body>
+    <!-- Контейнер информации о комнате -->
+    <div class="flex justify-center items-center py-[300px]">
+        <div class="flex flex-col space-y-4 w-[320px] text-myyellow">
+            <h2 class="text-myblack text-center text-lg">{{ room.name }}</h2>
+
+            <!-- Список пользователей в комнате -->
+            <div class="max-h-[150px] overflow-y-auto hide-scrollbar p-2 bg-myorange2 rounded-[10px] text-myblack">
+                <h3 class="text-center font-semibold">Users in this room:</h3>
+                <ul class="list-none p-2">
+                    {% for user_room in users_in_room %}
+                        <li class="p-1">{{ user_room.user.username }}</li>
+                    {% empty %}
+                        <li class="text-center">No users in this room yet.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <!-- Кнопка "Join Room" -->
+            <a href="{% url 'join_room' room.id %}" class="bg-mygreen px-4 p-2 rounded-[10px] text-center text-myyellow">
+                Join Room
+            </a>
+
+            <!-- Кнопка "Back" -->
+            <a href="{% url 'main' %}" class="bg-myaccentorange px-4 p-2 rounded-[10px] text-center">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Кнопка "Log out" -->
+    <a class="text-myblack text-[18px] absolute bottom-[30px] left-1/2 transform -translate-x-1/2 font-syne" href="{% url 'user_logout' %}">Log out</a>
+</body>
 </html>

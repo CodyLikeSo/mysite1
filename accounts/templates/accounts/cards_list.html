@@ -1,20 +1,65 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
-    <body>
-        <h1>LIST OF EXISTING CARDS IN ROOM</h1>
-        <ul>
-            {% for card in cards %}
-                <li>
-                    {{ card.name }} 
-                    <form action="{% url 'delete_card' room_pk=room.id card_pk=card.id %}" method="post" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit">Delete</button>
-                    </form>
-                </li>
-            {% empty %}
-                <li>No cards available.</li>
-            {% endfor %}
-        </ul>
-        <a href="{% url 'get_room' pk=room.id %}">BACK</a>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List of Cards in Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% tailwind_css %}
+    <style>
+        body {
+            overflow: hidden; /* Отключает прокрутку */
+        }
+    </style>
+    <style>
+        /* Скрытие скроллбара для Webkit (Chrome, Safari) */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Скрытие скроллбара для Firefox */
+        .hide-scrollbar {
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-myyellow">
+    <!-- Фоновые изображения -->
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/bottom_banner.png' %}" alt="Bottom Banner Image">
+    <img class="absolute top-[60px] left-1/2 transform -translate-x-1/2 z-[-0]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Top Banner Image">
+
+    <!-- Контейнер списка карточек в комнате -->
+    <div class="flex justify-center items-center py-[380px]">
+        <div class="flex flex-col space-y-4 w-[320px] text-myyellow">
+
+            <!-- Заголовок -->
+            <h2 class="text-myblack text-center text-xl">List of Existing Cards in Room</h2>
+
+            <!-- Контейнер с прокруткой и скрытым скроллбаром -->
+            <div class="max-h-[150px] overflow-y-auto hide-scrollbar p-2">
+                {% for card in cards %}
+                    <div class="flex justify-between items-center bg-myorange2 text-myblack px-4 p-2 rounded-[10px] mb-2">
+                        <span>{{ card.name }} | {{ card.price }} by {{ card.user }}</span>
+                        <form action="{% url 'delete_card' room_pk=room.id card_pk=card.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="text-red-500">Delete</button>
+                        </form>
+                    </div>
+                {% empty %}
+                    <div class="text-myblack text-center">No cards available.</div>
+                {% endfor %}
+            </div>
+
+            <!-- Кнопка "Back" -->
+            <a href="{% url 'get_room' pk=room.id %}" class="bg-myaccentorange px-4 p-2 rounded-[10px] text-center">
+                Back
+            </a>
+        </div>
+    </div>
+
+    <!-- Кнопка "Log out" -->
+    <a class="text-myblack text-[18px] absolute bottom-[30px] left-1/2 transform -translate-x-1/2 font-syne" href="{% url 'user_logout' %}">Log out</a>
+</body>
 </html>
