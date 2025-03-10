@@ -1,0 +1,20 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebapp - Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% tailwind_css %}
+</head>
+<body class="bg-myyellow flex items-center justify-center min-h-screen">
+    <div>
+        <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/fire.png' %}" alt="Fire Image">
+        <img class="absolute top-[260px] left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+        <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Banner Image">
+    </div>
+    <h1 class="text-center">User already exist</h1>
+</body>
+
+</html>

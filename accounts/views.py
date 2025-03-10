@@ -32,7 +32,7 @@ def join(request):
         password = request.POST.get('password')
 
         if User.objects.filter(username=username).exists():
-            return HttpResponse("User already exists")
+            return render(request, 'accounts/user_already_exist.html')
 
         new_user = User(username=username)
         new_user.set_password(password)
@@ -85,8 +85,8 @@ def add_room(request):
         new_room = Room(name=name, admin=admin)
         new_room.save()
 
-        text_header = "SUCCES"
-        text_inner = 'YOUR ROOM ADDED TO LIST'
+        text_header = "Nice"
+        text_inner = "You've created a new room"
         context = {'text_header':text_header, 'text_inner':text_inner}
 
         user_room, created = UserRoom.objects.get_or_create(user=request.user, room=new_room)

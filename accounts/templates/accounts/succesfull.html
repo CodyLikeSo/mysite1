@@ -1,10 +1,32 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
-    <body>
-        <h1>{{text_header}}</h1>
-        <h2>
-            {{ text_inner }}
-        <h2>
-        <a href="{% url 'main' %}">BACK</a>
-    </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebapp - Message</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% tailwind_css %}
+    <style>
+        body {
+            overflow: hidden; /* Отключает прокрутку */
+        }
+    </style>
+</head>
+<body class="bg-myyellow">
+    <!-- Фоновые изображения -->
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/fire.png' %}" alt="Fire Image">
+    <img class="absolute top-[260px] left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Banner Image">
+
+    <!-- Контент -->
+    <div class="flex flex-col justify-center items-center h-screen text-center">
+        <h1 class="text-myblack text-[26px] font-syne mb-4">{{ text_header }}</h1>
+        <h2 class="text-myblack text-[20px] font-syne mb-6">{{ text_inner }}</h2>
+
+        <a href="{% url 'main' %}" class="bg-myaccentorange text-myyellow py-2 px-6 rounded-[15px] font-syne text-[18px]">
+            Back
+        </a>
+    </div>
+</body>
 </html>

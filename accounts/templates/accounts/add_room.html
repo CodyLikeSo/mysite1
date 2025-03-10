@@ -1,6 +1,46 @@
-<form method="POST">
-    <h1>SELECT NAME FOR YOUR ROOM</h1>
-    {% csrf_token %}
-    <input type="name" name="name">
-    <button type="submit">ADD ROOM</button>
-</form>
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kebapp - Create Room</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+    {% tailwind_css %}
+    <style>
+        body {
+            overflow: hidden; /* Отключает прокрутку */
+        }
+    </style>
+</head>
+<body class="bg-myyellow">
+    <!-- Фоновые изображения -->
+    <img class="absolute bottom-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/fire.png' %}" alt="Fire Image">
+    <img class="absolute top-[260px] left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/logo.png' %}" alt="Logo Image">
+    <img class="absolute top-0 left-1/2 transform -translate-x-1/2 z-[-999]" src="{% static 'accounts/top_banner.png' %}" alt="Banner Image">
+
+    <!-- Форма -->
+    <div class="flex justify-center items-center py-[350px]">
+        <form method="POST" class="flex flex-col text-center" id="room-form">
+            {% csrf_token %}
+            <h1 class="text-myblack text-[22px] mb-6 font-syne">Select name for your room</h1>
+            
+            <div class="focus:border-myaccentorange bg-myorange mb-6 rounded-[15px]">
+                <input class="bg-myorange rounded-[15px] text-myaccentorange w-[320px] p-2 focus:border-myaccentorange border-[2px] border-transparent focus:outline-none focus:ring-0 placeholder:text-myaccentorange" 
+                       type="text" name="name" placeholder="Room Name" required>
+            </div>
+
+            <div class="bg-myaccentorange py-3 rounded-[15px]">
+                <button class="flex mx-auto justify-center items-center text-myyellow" type="submit" id="submit-btn">ADD ROOM</button>
+            </div>
+        </form>
+    </div>
+    <a class="text-myblack text-[18px] absolute bottom-[30px] left-1/2 transform -translate-x-1/2 font-syne" href="{% url 'main' %}">Back</a>
+
+    <script>
+        document.getElementById('room-form').addEventListener('submit', function() {
+            document.getElementById('submit-btn').disabled = true; // Отключаем кнопку после отправки
+        });
+    </script>
+</body>
+</html>
