@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-!2!%ws6y9ofmdpsfoo3-%9u33d#w)^f2%6eg54&7f-owz2_-7&
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['mysite1-ztmg.onrender.com']
 
 INTERNAL_IPS = [
     "127.0.0.1",
